@@ -247,6 +247,51 @@ def test_timeout(add_parameters, use_stream):
 @pytest.mark.parametrize(
     'add_parameters',
     [
+        {
+            'uses': PlaceholderExecutorWrongDecorator,
+            'uses_dynamic_batching': USES_DYNAMIC_BATCHING_PLACE_HOLDER_EXECUTOR,
+        }
+    ],
+)
+@pytest.mark.parametrize('use_stream', [False, True])
+@pytest.mark.parametrize('use_dynamic_batching', [False, True])
+def test_timeout_no_use(add_parameters, use_stream, use_dynamic_batching):
+    for k, v in add_parameters["uses_dynamic_batching"].items():
+        v["use_dynamic_batching"] = use_dynamic_batching
+    f = Flow().add(**add_parameters)
+    with f:
+        start_time = time.time()
+        f.post('/bar', inputs=DocumentArray.empty(2), stream=use_stream)
+        time_taken = time.time() - start_time
+        if use_dynamic_batching:
+            assert time_taken > 2, 'Timeout ended too fast'
+            assert time_taken < 2 + TIMEOUT_TOLERANCE, 'Timeout ended too slowly'
+        else:
+            assert time_taken < 2
+
+        with mp.Pool(3) as p:
+            start_time = time.time()
+            list(
+                p.map(
+                    call_api,
+                    [
+                        RequestStruct(f.port, '/bar', range(1), use_stream),
+                        RequestStruct(f.port, '/bar', range(1), not use_stream),
+                        RequestStruct(f.port, '/bar', range(1), use_stream),
+                    ],
+                )
+            )
+            time_taken = time.time() - start_time
+            if use_dynamic_batching:
+                assert time_taken > 2, 'Timeout ended too fast'
+                assert time_taken < 2 + TIMEOUT_TOLERANCE, 'Timeout ended too slowly'
+            else:
+                assert time_taken < 2
+
+
+@pytest.mark.parametrize(
+    'add_parameters',
+    [
         {'uses': PlaceholderExecutor},
         {
             'uses': PlaceholderExecutorWrongDecorator,
