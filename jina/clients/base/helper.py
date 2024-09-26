@@ -180,7 +180,7 @@ class HTTPClientlet(AioHttpClientlet):
                     handle_response_status(r_status, r_str, url)
                 return r_status, r_str
             except (ValueError, ConnectionError, BadClient, aiohttp.ClientError, aiohttp.ClientConnectionError) as err:
-                self.logger.debug(f'Got an error: {err} sending POST to {url} in attempt {attempt}/{self.max_attempts}')
+                self.logger.debug(f'Got an error of type {type(err)}: {err} sending POST to {url} in attempt {attempt}/{self.max_attempts}')
                 await retry.wait_or_raise_err(
                     attempt=attempt,
                     err=err,
@@ -191,7 +191,7 @@ class HTTPClientlet(AioHttpClientlet):
                 )
             except Exception as exc:
                 self.logger.debug(
-                    f'Got a non-retried error: {exc} sending POST to {url}')
+                    f'Got a non-retried error of type {type(exc)}: {exc} sending POST to {url}')
                 raise exc
 
     async def send_streaming_message(self, url, doc: 'Document', on: str):
