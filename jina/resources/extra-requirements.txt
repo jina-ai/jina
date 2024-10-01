@@ -71,7 +71,7 @@ mock:                       test
 requests-mock:              test
 pytest-custom_exit_code:    test
 black==24.3.0:              test
-kubernetes>=18.20.0:        test
+kubernetes>=18.20.0,<31.0.0: test
 pytest-kind==22.11.1:       test
 pytest-lazy-fixture:        test
 torch:                      cicd

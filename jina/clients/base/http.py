@@ -153,15 +153,14 @@ class HTTPBaseClient(BaseClient):
         with ImportExtensions(required=True):
             pass
 
-        self.inputs = inputs
-        request_iterator = self._get_requests(**kwargs)
+        request_iterator, inputs_length = self._get_requests(inputs=inputs, **kwargs)
         on = kwargs.get('on', '/post')
         if len(self._endpoints) == 0:
             await self._get_endpoints_from_openapi(**kwargs)
 
         async with AsyncExitStack() as stack:
             cm1 = ProgressBar(
-                total_length=self._inputs_length, disable=not self.show_progress
+                total_length=inputs_length, disable=not self.show_progress
             )
             p_bar = stack.enter_context(cm1)
             proto = 'https' if self.args.tls else 'http'

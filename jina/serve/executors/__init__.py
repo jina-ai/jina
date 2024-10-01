@@ -655,9 +655,22 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             return
 
     def _add_dynamic_batching(self, _dynamic_batching: Optional[Dict]):
+        from collections.abc import Mapping
+
+        def deep_update(source, overrides):
+            for key, value in overrides.items():
+                if isinstance(value, Mapping) and value:
+                    returned = deep_update(source.get(key, {}), value)
+                    source[key] = returned
+                else:
+                    source[key] = overrides[key]
+            return source
+
         if _dynamic_batching:
             self.dynamic_batching = getattr(self, 'dynamic_batching', {})
-            self.dynamic_batching.update(_dynamic_batching)
+            self.dynamic_batching = deep_update(
+                self.dynamic_batching, _dynamic_batching
+            )
 
     def _add_metas(self, _metas: Optional[Dict]):
         from jina.serve.executors.metas import get_default_metas
