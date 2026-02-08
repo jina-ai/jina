@@ -426,7 +426,23 @@ def dynamic_batching(
     Dynamic batching works by collecting Documents from multiple requests in a queue, and passing them to the Executor
     in batches of specified size.
     This can improve throughput and resource utilization at the cost of increased latency.
-    TODO(johannes) add docstring example
+
+    Example:
+        .. highlight:: python
+        .. code-block:: python
+
+            from jina import Executor, requests, DocumentArray
+            from jina.serve.executors.decorators import dynamic_batching
+
+            class MyExecutor(Executor):
+                @requests(on='/encode')
+                @dynamic_batching(preferred_batch_size=32, timeout=5000)
+                async def encode(self, docs: DocumentArray, **kwargs):
+                    # This method will receive batches of up to 32 documents
+                    # or whatever accumulated within 5 seconds
+                    for doc in docs:
+                        doc.embedding = self.model.encode(doc.text)
+                    return docs
 
     :param func: the method to decorate
     :param preferred_batch_size: target number of Documents in a batch. The batcher will collect requests until `preferred_batch_size` is reached,
