@@ -35,8 +35,11 @@ def used_memory(unit: int = 1024 * 1024 * 1024) -> float:
     :return: Memory usage of the current process.
     """
     if __windows__:
-        # TODO: windows doesn't include `resource` module
-        return 0
+        try:
+            import psutil
+            return psutil.Process().memory_info().rss / unit
+        except ImportError:
+            return 0
 
     import resource
 
