@@ -1338,9 +1338,11 @@ def is_yaml_filepath(val) -> bool:
     :return: True if the file is YAML else False.
     """
     if __windows__:
-        r = r'.*.ya?ml$'  # TODO: might not be exhaustive
+        # Windows paths: supports C:\, \\, .\ and relative paths
+        r = r'^(?:[a-zA-Z]:[\\/]|[\\/]{2}|\.[\\/])?[\w\-\\_\.\\/\s]+\.ya?ml$'
     else:
-        r = r'^[/\w\-\_\.]+.ya?ml$'
+        # Unix paths: supports absolute /, relative ./ and current dir paths
+        r = r'^(?:/|\./)?\S+\.ya?ml$'
     return re.match(r, val.strip()) is not None
 
 
