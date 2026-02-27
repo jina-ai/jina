@@ -32,7 +32,7 @@ if (3, 7, 0) <= sys.version_info < (3, 8, 0):
             easy_install.main(['fastentrypoints'])
             pkg_resources.require('fastentrypoints')
             import fastentrypoint
-        except:
+        except Exception:
             pass
 
 try:

@@ -1082,7 +1082,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
             try:
                 _ = asyncio.get_event_loop()
-            except:
+            except Exception:
                 loop = asyncio.new_event_loop()
                 asyncio.set_event_loop(loop)
 
@@ -1092,7 +1092,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
             running_in_event_loop = False
             try:
                 asyncio.get_event_loop().run_until_complete(_f())
-            except:
+            except Exception:
                 running_in_event_loop = True
 
             if not running_in_event_loop:
@@ -1193,7 +1193,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 self.gateway_pod.wait_start_success()
             for shard_id in self.shards:
                 self.shards[shard_id].wait_start_success()
-        except:
+        except Exception:
             self.close()
             raise
 
@@ -1217,7 +1217,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
 
             await asyncio.gather(*coros)
             self.logger.debug('Deployment started successfully')
-        except:
+        except Exception:
             self.close()
             raise
 
@@ -1288,7 +1288,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 if len(parts) == 1:
                     try:
                         int(parts[0])
-                    except:
+                    except Exception:
                         use_uuids = True
                     if use_uuids:
                         return parts
@@ -1297,7 +1297,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 # try to detect if parts are not numbers
                 try:
                     int(parts[0])
-                except:
+                except Exception:
                     use_uuids = True
 
                 if not use_uuids:
@@ -1328,7 +1328,7 @@ class Deployment(JAMLCompatible, PostMixin, BaseOrchestrator, metaclass=Deployme
                 num_devices = str(subprocess.check_output(['nvidia-smi', '-L'])).count(
                     'UUID'
                 )
-            except:
+            except Exception:
                 num_devices = int(os.environ.get('CUDA_TOTAL_DEVICES', 0))
                 if num_devices == 0:
                     return

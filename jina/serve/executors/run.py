@@ -244,6 +244,6 @@ def run_stateful(
 
         worker.join()
         raft_worker.join()
-    except:
+    except Exception:
         worker.terminate()
         raft_worker.terminate()

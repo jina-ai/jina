@@ -344,7 +344,7 @@ class ContainerPod(BasePod):
                     ctrl_host = client.networks.get(network).attrs['IPAM']['Config'][0][
                         'Gateway'
                     ]
-                except:
+                except Exception:
                     ctrl_host = __docker_host__
             else:
                 ctrl_host = self.args.host

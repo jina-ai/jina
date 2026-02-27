@@ -70,7 +70,7 @@ class HTTPBaseClient(BaseClient):
                     self._endpoints = extract_paths_by_method(openapi_response).get(
                         'post', []
                     )
-        except:
+        except Exception:
             pass
 
     async def _is_flow_ready(self, **kwargs) -> bool:

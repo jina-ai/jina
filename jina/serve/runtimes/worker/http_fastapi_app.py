@@ -172,7 +172,7 @@ def get_fastapi_app(
                 try:
                     _ = parameters_model()
                     parameters_model_needed = False
-                except:
+                except Exception:
                     parameters_model_needed = True
                 parameters_model = parameters_model if parameters_model_needed else Optional[parameters_model]
                 default_parameters = (

@@ -25,7 +25,7 @@ async def create_all_flow_deployments_and_wait_ready(
     }
     try:
         utils.create_from_dict(api_client, namespace_object)
-    except:
+    except Exception:
         pass
     deployment_set = set(os.listdir(flow_dump_path))
     assert deployment_set == {'gateway', 'slow_process_executor'}

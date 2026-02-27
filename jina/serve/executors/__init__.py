@@ -115,7 +115,7 @@ def get_inner_pydantic_model(annotation: Type) -> bool:
             for arg in args:
                 if is_pydantic_model(arg):
                     return arg
-    except:
+    except Exception:
         pass
     return None
 
@@ -1422,7 +1422,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
             p.touch()
             with self._write_lock:
                 self.snapshot(snapshot_file)
-        except:
+        except Exception:
             did_raise_exception.set()
             raise
 
@@ -1430,7 +1430,7 @@ class BaseExecutor(JAMLCompatible, metaclass=ExecutorType):
         try:
             with self._write_lock:
                 self.restore(snapshot_file)
-        except:
+        except Exception:
             did_raise_exception.set()
             raise
         finally:

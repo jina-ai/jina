@@ -1985,7 +1985,7 @@ class Flow(
             # kick off all deployments wait-ready tasks
             try:
                 _ = asyncio.get_event_loop()
-            except:
+            except Exception:
                 loop = asyncio.new_event_loop()
                 asyncio.set_event_loop(loop)
 
@@ -1995,7 +1995,7 @@ class Flow(
             running_in_event_loop = False
             try:
                 asyncio.get_event_loop().run_until_complete(_f())
-            except:
+            except Exception:
                 running_in_event_loop = True
 
             wait_ready_threads = []
@@ -2223,7 +2223,7 @@ class Flow(
 
                 display(Image(url=url))
                 showed = True
-            except:
+            except Exception:
                 # no need to panic users
                 pass
 

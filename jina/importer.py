@@ -169,7 +169,7 @@ class PathImporter:
                     importlib.import_module(path)
                 except ModuleNotFoundError:
                     not_python_module_paths.append(path)
-                except:
+                except Exception:
                     raise
             else:
                 not_python_module_paths.append(path)

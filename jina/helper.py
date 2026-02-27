@@ -941,11 +941,11 @@ def get_full_version() -> Optional[Tuple[Dict, Dict]]:
 
     try:
         from hubble import __version__ as __hubble_version__
-    except:
+    except Exception:
         __hubble_version__ = 'not-available'
     try:
         from jcloud import __version__ as __jcloud_version__
-    except:
+    except Exception:
         __jcloud_version__ = 'not-available'
 
     from jina import __docarray_version__, __proto_version__, __version__
@@ -1220,7 +1220,7 @@ def get_public_ip(timeout: float = 0.3):
                 _ip = fp.read().decode().strip()
                 return _ip
 
-        except:
+        except Exception:
             pass  # intentionally ignored, public ip is not showed
 
     ip_server_list = [
@@ -1357,7 +1357,7 @@ def download_mermaid_url(mermaid_url, output) -> None:
         req = Request(mermaid_url, headers={'User-Agent': 'Mozilla/5.0'})
         with open(output, 'wb') as fp:
             fp.write(urlopen(req).read())
-    except:
+    except Exception:
         from jina.logging.predefined import default_logger
 
         default_logger.error(
@@ -1658,7 +1658,7 @@ def send_telemetry_event(event: str, obj_cls_name: Any, **kwargs) -> None:
             )
             urllib.request.urlopen(req)
 
-        except:
+        except Exception:
             pass
 
     threading.Thread(target=_telemetry, daemon=True).start()

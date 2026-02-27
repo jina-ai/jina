@@ -37,7 +37,7 @@ class BaseServer(MonitoringMixin, InstrumentationMixin):
         self.works_as_load_balancer = False
         try:
             self.is_cancel = is_cancel or asyncio.Event()
-        except:
+        except Exception:
             # in some unit tests we instantiate the server without an asyncio Loop
             import threading
 

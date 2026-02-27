@@ -235,7 +235,7 @@ async def test_worker_runtime_slow_init_exec():
             try:
                 s.connect((args.host, args.port[0]))
                 connected = True
-            except:
+            except Exception:
                 time.sleep(0.2)
 
     # Executor sleeps 5 seconds, so at least 5 seconds need to have elapsed here

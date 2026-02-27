@@ -186,7 +186,7 @@ class RequestStreamer:
                 if metadatum.key == '__prefetch__':
                     try:
                         prefetch = int(metadatum.value)
-                    except:
+                    except Exception:
                         self.logger.debug(f'Couldn\'t parse prefetch to int value!')
 
         try:

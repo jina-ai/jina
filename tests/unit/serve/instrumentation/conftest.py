@@ -97,7 +97,7 @@ def monkeypatch_metric_exporter(
                 print(f'READ {r[0:3]}')
                 try:
                     return json.loads(r)
-                except:
+                except Exception:
                     return None
 
         ret = {}

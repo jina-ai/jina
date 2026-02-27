@@ -93,7 +93,7 @@ def get_base_executor_version():
             return __version__
         else:
             return 'master'
-    except:
+    except Exception:
         return 'master'
 
 

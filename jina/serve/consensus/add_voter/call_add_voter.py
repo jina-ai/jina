@@ -21,7 +21,7 @@ def call_add_voter(target, replica_id, voter_address):
                 return True
             else:
                 return False
-        except:
+        except Exception:
             return False
 
 
@@ -43,5 +43,5 @@ async def async_call_add_voter(target, replica_id, voter_address):
                 return True
             else:
                 return False
-        except:
+        except Exception:
             return False

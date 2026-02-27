@@ -230,7 +230,7 @@ class KindClusterWrapperV2:
             s = socket.socket()
             try:
                 s.connect(("127.0.0.1", host_port))
-            except:
+            except Exception:
                 if i >= retries - 1:
                     raise
             finally:

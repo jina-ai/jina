@@ -220,7 +220,7 @@ class WebSocketBaseClient(BaseClient):
                 exception_raised = ex
                 try:
                     receive_task.cancel()
-                except:
+                except Exception:
                     raise ex
             finally:
                 if iolet.close_code == status.WS_1011_INTERNAL_ERROR:

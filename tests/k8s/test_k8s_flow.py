@@ -43,7 +43,7 @@ async def create_all_flow_deployments_and_wait_ready(
     try:
         logger.info(f'create Namespace {namespace}')
         utils.create_from_dict(api_client, namespace_object)
-    except:
+    except Exception:
         pass
 
     while True:
@@ -1056,7 +1056,7 @@ async def _create_external_deployment(api_client, app_client, docker_images, tmp
     }
     try:
         utils.create_from_dict(api_client, namespace_object)
-    except:
+    except Exception:
         pass
 
     for filename in filenames:
@@ -1066,7 +1066,7 @@ async def _create_external_deployment(api_client, app_client, docker_images, tmp
                 yaml_file=filename,
                 namespace=namespace,
             )
-        except:
+        except Exception:
             pass
 
     await asyncio.sleep(1.0)
@@ -1117,7 +1117,7 @@ async def test_flow_with_failing_executor(logger, docker_images, tmpdir):
                 core_client=core_client,
                 endpoint='/',
             )
-        except:
+        except Exception:
             pass
 
         await asyncio.sleep(0.5)

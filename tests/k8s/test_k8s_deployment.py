@@ -33,7 +33,7 @@ async def create_executor_deployment_and_wait_ready(
     try:
         logger.info(f'create Namespace {namespace}')
         utils.create_from_dict(api_client, namespace_object)
-    except:
+    except Exception:
         pass
 
     while True:

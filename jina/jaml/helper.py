@@ -30,7 +30,7 @@ class JinaConstructor(FullConstructor):
         """
         try:
             hash(key)
-        except:
+        except Exception:
             if isinstance(key, list):
                 for i in range(len(key)):
                     if not isinstance(key[i], collections.abc.Hashable):

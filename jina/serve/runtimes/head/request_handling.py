@@ -243,7 +243,7 @@ class HeaderRequestHandler(MonitoringRequestMixin):
         if self._pydantic_models_by_endpoint is None and docarray_v2:
             try:
                 await self.endpoints_discovery_task
-            except:
+            except Exception:
                 raise
 
         WorkerRequestHandler.merge_routes(requests)
