@@ -53,7 +53,7 @@ filelock:                   standard,devel
 requests:                   standard,devel
 websockets:                 standard,devel
 pydantic<3.0.0:             core
-python-multipart:           standard,devel
+python-multipart>=0.0.7:    standard,devel
 aiofiles:                   standard,devel
 aiohttp:                    standard,devel
 scipy>=1.6.1:               test
