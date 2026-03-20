@@ -2,7 +2,7 @@ import os
 import re
 
 from typing import TYPE_CHECKING, Tuple, Dict, Optional, cast
-from pkg_resources import Requirement
+from packaging.requirements import Requirement
 
 if TYPE_CHECKING:  # pragma: no cover
     from pathlib import Path
@@ -90,7 +90,7 @@ def _parse_requirement(line: str) -> 'Requirement':
 
         line = f'{egg or name} @ {line}'
 
-    return Requirement.parse(line)
+    return Requirement(line)
 
 
 def _expand_env_variables(line: str) -> str:
@@ -132,7 +132,7 @@ def _get_install_options(requirements_file: 'Path', excludes: Tuple[str] = ('jin
                 expand_req = _expand_env_variables(req)
                 req_spec = _parse_requirement(expand_req)
 
-                if req_spec.project_name not in excludes or len(req_spec.extras) > 0:
+                if req_spec.name not in excludes or len(req_spec.extras) > 0:
                     install_reqs.append(expand_req)
     return install_reqs, install_options
 
