@@ -388,7 +388,7 @@ class CastHostAction(argparse.Action):
         """
         d = []
         for value in values:
-            d.extend(value.split(','))
+            d.extend(host.strip() for host in value.split(','))
         setattr(args, self.dest, d)
 
 

@@ -81,6 +81,7 @@ def test_pod_port_default():
     [
         (['localhost'], ['localhost']),
         (['0.0.0.0,localhost'], ['0.0.0.0', 'localhost']),
+        (['0.0.0.0, localhost'], ['0.0.0.0', 'localhost']),
         (['0.0.0.0,localhost', '127.0.0.1'], ['0.0.0.0', 'localhost', '127.0.0.1']),
     ],
 )
