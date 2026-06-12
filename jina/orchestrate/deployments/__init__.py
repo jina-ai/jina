@@ -124,7 +124,7 @@ async def _async_call_add_voters(leader, voters, replica_ids, logger):
                 break
             else:
                 logger.debug(f'Trying {i}th failed. Wait 2 seconds for next try')
-                time.sleep(2.0)
+                await asyncio.sleep(2.0)
         success_lists.append(success)
         if not success:
             logger.warning(
