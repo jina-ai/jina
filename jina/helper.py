@@ -209,14 +209,16 @@ def get_readable_size(num_bytes: Union[int, float]) -> str:
     :return: Human readable string representation.
     """
     num_bytes = int(num_bytes)
+    sign = '-' if num_bytes < 0 else ''
+    num_bytes = abs(num_bytes)
     if num_bytes < 1024:
-        return f'{num_bytes} Bytes'
+        return f'{sign}{num_bytes} Bytes'
     elif num_bytes < 1024**2:
-        return f'{num_bytes / 1024:.1f} KB'
+        return f'{sign}{num_bytes / 1024:.1f} KB'
     elif num_bytes < 1024**3:
-        return f'{num_bytes / (1024 ** 2):.1f} MB'
+        return f'{sign}{num_bytes / (1024 ** 2):.1f} MB'
     else:
-        return f'{num_bytes / (1024 ** 3):.1f} GB'
+        return f'{sign}{num_bytes / (1024 ** 3):.1f} GB'
 
 
 def batch_iterator(
