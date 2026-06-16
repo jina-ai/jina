@@ -15,6 +15,7 @@ from jina.helper import (
     deprecated_alias,
     dunder_get,
     find_request_binding,
+    get_readable_size,
     get_ci_vendor,
     is_generator,
     is_port_free,
@@ -426,3 +427,21 @@ def test_is_generator():
     assert not is_generator(async_normal_func)
     assert is_generator(yield_from_generator_func)
     assert is_generator(async_yield_generator_func)
+
+
+@pytest.mark.parametrize(
+    'num_bytes, expected',
+    [
+        (0, '0 Bytes'),
+        (512, '512 Bytes'),
+        (1536, '1.5 KB'),
+        (2 * 1024**2, '2.0 MB'),
+        (3 * 1024**3, '3.0 GB'),
+        (-512, '-512 Bytes'),
+        (-1536, '-1.5 KB'),
+        (-2 * 1024**2, '-2.0 MB'),
+        (-5 * 1024**3, '-5.0 GB'),
+    ],
+)
+def test_get_readable_size(num_bytes, expected):
+    assert get_readable_size(num_bytes) == expected
