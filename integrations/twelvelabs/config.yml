@@ -1,0 +1,6 @@
+jtype: TwelveLabsExecutor
+py_modules:
+  - executor/__init__.py
+with:
+  embed_model_name: marengo3.0
+  analyze_model_name: pegasus1.5

@@ -1,0 +1,2 @@
+jina
+twelvelabs>=1.2.8
