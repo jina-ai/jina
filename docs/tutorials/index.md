@@ -4,6 +4,7 @@
 deploy-model
 deploy-pipeline
 llm-serve
+twelvelabs-video-understanding
 ```
 
 
