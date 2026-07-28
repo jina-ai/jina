@@ -30,8 +30,10 @@ jobs:
     needs: [assign-label-to-pr]
     if: ${{ needs.assign-label-to-pr.outputs.docs == 'true' }}
     steps:
-      - run: |
-          echo "BRANCH_NAME=${{ github.head_ref }}" >> $GITHUB_ENV
+      - env:
+          HEAD_REF: ${{ github.head_ref }}
+        run: |
+          echo "BRANCH_NAME=$HEAD_REF" >> $GITHUB_ENV
       - uses: actions/checkout@v2.5.0
         with:
           repository: jina-ai/jina
