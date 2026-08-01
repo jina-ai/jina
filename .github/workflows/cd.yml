@@ -264,7 +264,8 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
-      - id: computedevdelta
+      - name: Compute .devN version delta
+        id: computedevdelta
         run: |
           git fetch --depth=200
           LAST_VER=$(git tag -l | sort -V | tail -n1)
